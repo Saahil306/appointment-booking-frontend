@@ -10,7 +10,6 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { AuthService } from '../../services/auth.service';
 import { UserService } from '../../services/user.service';
-
 @Component({
   selector: 'app-profile',
   standalone: true,
@@ -32,10 +31,8 @@ import { UserService } from '../../services/user.service';
           <mat-card-title>My Profile</mat-card-title>
           <mat-card-subtitle>Update your personal information</mat-card-subtitle>
         </mat-card-header>
-        
         <mat-card-content>
           <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
-            <!-- Basic Information -->
             <div class="section">
               <h3>Basic Information</h3>
               <div class="row">
@@ -46,7 +43,6 @@ import { UserService } from '../../services/user.service';
                     First name is required
                   </mat-error>
                 </mat-form-field>
-
                 <mat-form-field appearance="outline" class="half-width">
                   <mat-label>Last Name</mat-label>
                   <input matInput formControlName="lastName">
@@ -55,13 +51,11 @@ import { UserService } from '../../services/user.service';
                   </mat-error>
                 </mat-form-field>
               </div>
-
               <mat-form-field appearance="outline" class="full-width">
                 <mat-label>Email</mat-label>
                 <input matInput formControlName="email" type="email" readonly>
                 <mat-hint>Email cannot be changed</mat-hint>
               </mat-form-field>
-
               <mat-form-field appearance="outline" class="full-width">
                 <mat-label>Phone</mat-label>
                 <input matInput formControlName="phone">
@@ -70,63 +64,50 @@ import { UserService } from '../../services/user.service';
                 </mat-error>
               </mat-form-field>
             </div>
-
-            <!-- Customer Specific Fields -->
             <div class="section" *ngIf="isCustomer()">
               <h3>Address Information</h3>
               <mat-form-field appearance="outline" class="full-width">
                 <mat-label>Address</mat-label>
                 <input matInput formControlName="address">
               </mat-form-field>
-
               <div class="row">
                 <mat-form-field appearance="outline" class="half-width">
                   <mat-label>City</mat-label>
                   <input matInput formControlName="city">
                 </mat-form-field>
-
                 <mat-form-field appearance="outline" class="half-width">
                   <mat-label>State</mat-label>
                   <input matInput formControlName="state">
                 </mat-form-field>
               </div>
-
               <mat-form-field appearance="outline" class="full-width">
                 <mat-label>Zip Code</mat-label>
                 <input matInput formControlName="zipCode">
               </mat-form-field>
             </div>
-
-            <!-- Provider Specific Fields -->
             <div class="section" *ngIf="isProvider()">
               <h3>Professional Information</h3>
               <mat-form-field appearance="outline" class="full-width">
                 <mat-label>Service Type</mat-label>
                 <input matInput formControlName="serviceType">
               </mat-form-field>
-
               <mat-form-field appearance="outline" class="full-width">
                 <mat-label>Qualification</mat-label>
                 <input matInput formControlName="qualification">
               </mat-form-field>
-
               <mat-form-field appearance="outline" class="full-width">
                 <mat-label>Experience</mat-label>
                 <input matInput formControlName="experience">
               </mat-form-field>
-
               <mat-form-field appearance="outline" class="full-width">
                 <mat-label>Bio</mat-label>
                 <textarea matInput formControlName="bio" rows="3"></textarea>
               </mat-form-field>
-
               <mat-form-field appearance="outline" class="full-width">
                 <mat-label>Hourly Rate (₹)</mat-label>
                 <input matInput type="number" formControlName="hourlyRate">
               </mat-form-field>
             </div>
-
-            <!-- Admin Specific Fields -->
             <div class="section" *ngIf="isAdmin()">
               <h3>Admin Information</h3>
               <mat-form-field appearance="outline" class="full-width">
@@ -134,7 +115,6 @@ import { UserService } from '../../services/user.service';
                 <input matInput formControlName="department">
               </mat-form-field>
             </div>
-
             <div class="form-actions">
               <button mat-button type="button" (click)="goBack()">Cancel</button>
               <button mat-raised-button color="primary" type="submit" [disabled]="!profileForm.valid || loading">
@@ -194,7 +174,6 @@ export class ProfileComponent implements OnInit {
   currentUser: any;
   loading = false;
   originalData: any;
-
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
@@ -204,7 +183,6 @@ export class ProfileComponent implements OnInit {
   ) {
     this.profileForm = this.createForm();
   }
-
   ngOnInit() {
     this.currentUser = this.authService.getCurrentUser();
     if (!this.currentUser) {
@@ -213,29 +191,24 @@ export class ProfileComponent implements OnInit {
     }
     this.loadUserProfile();
   }
-
   createForm(): FormGroup {
     return this.fb.group({
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       phone: ['', Validators.required],
-      // Customer fields
       address: [''],
       city: [''],
       state: [''],
       zipCode: [''],
-      // Provider fields
       serviceType: [''],
       qualification: [''],
       experience: [''],
       bio: [''],
       hourlyRate: [0],
-      // Admin fields
       department: ['']
     });
   }
-
   loadUserProfile() {
     this.userService.getUserProfile(this.currentUser.id).subscribe({
       next: (user) => {
@@ -247,7 +220,6 @@ export class ProfileComponent implements OnInit {
       }
     });
   }
-
   populateForm(user: any) {
     this.profileForm.patchValue({
       firstName: user.firstName,
@@ -266,31 +238,23 @@ export class ProfileComponent implements OnInit {
       department: user.department || ''
     });
   }
-
   isCustomer(): boolean {
     return this.authService.isCustomer();
   }
-
   isProvider(): boolean {
     return this.authService.isProvider();
   }
-
   isAdmin(): boolean {
     return this.authService.isAdmin();
   }
-
   onSubmit() {
     if (this.profileForm.valid) {
       this.loading = true;
-      
       const formData = this.profileForm.value;
-      
       this.userService.updateUserProfile(this.currentUser.id, formData).subscribe({
         next: (updatedUser) => {
           this.loading = false;
           this.snackBar.open('Profile updated successfully!', 'Close', { duration: 3000 });
-          
-          // Update local storage with new data
           localStorage.setItem('currentUser', JSON.stringify(updatedUser));
         },
         error: (error) => {
@@ -300,7 +264,6 @@ export class ProfileComponent implements OnInit {
       });
     }
   }
-
   goBack() {
     if (this.isCustomer()) {
       this.router.navigate(['/customer/dashboard']);

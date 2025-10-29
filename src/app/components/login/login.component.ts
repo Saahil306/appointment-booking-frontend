@@ -8,7 +8,6 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { AuthService } from '../../services/auth.service';
-
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -28,7 +27,6 @@ import { AuthService } from '../../services/auth.service';
         <mat-card-header>
           <mat-card-title>Login to Booking System</mat-card-title>
         </mat-card-header>
-        
         <mat-card-content>
           <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
             <mat-form-field appearance="outline" class="full-width">
@@ -41,7 +39,6 @@ import { AuthService } from '../../services/auth.service';
                 Please enter a valid email
               </mat-error>
             </mat-form-field>
-
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Password</mat-label>
               <input matInput formControlName="password" type="password">
@@ -49,15 +46,13 @@ import { AuthService } from '../../services/auth.service';
                 Password is required
               </mat-error>
             </mat-form-field>
-
             <button mat-raised-button color="primary" class="full-width" type="submit" [disabled]="!loginForm.valid || loading">
               {{ loading ? 'Logging in...' : 'Login' }}
             </button>
           </form>
-
           <div class="register-links">
             <p>Don't have an account?</p>
-            <a routerLink="/register/customer" class="link">Register as Customer</a> | 
+            <a routerLink="/register/customer" class="link">Register as Customer</a> |
             <a routerLink="/register/provider" class="link">Register as Provider</a>
           </div>
         </mat-card-content>
@@ -98,7 +93,6 @@ import { AuthService } from '../../services/auth.service';
 export class LoginComponent {
   loginForm: FormGroup;
   loading = false;
-
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
@@ -110,7 +104,6 @@ export class LoginComponent {
       password: ['', Validators.required]
     });
   }
-
   onSubmit() {
     if (this.loginForm.valid) {
       this.loading = true;
@@ -118,8 +111,6 @@ export class LoginComponent {
         next: (response) => {
           localStorage.setItem('currentUser', JSON.stringify(response.user));
           this.snackBar.open('Login successful!', 'Close', { duration: 3000 });
-          
-          // Redirect based on role
           if (response.user.role === 'CUSTOMER') {
             this.router.navigate(['/customer/dashboard']);
           } else if (response.user.role === 'SERVICE_PROVIDER') {

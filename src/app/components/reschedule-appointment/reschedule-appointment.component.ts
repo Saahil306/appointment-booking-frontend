@@ -12,7 +12,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatDialogModule, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { AuthService } from '../../services/auth.service';
 import { AppointmentService } from '../../services/appointment.service';
-import { MatDividerModule } from '@angular/material/divider'; // ADD THIS
+import { MatDividerModule } from '@angular/material/divider';
 @Component({
   selector: 'app-reschedule-appointment',
   standalone: true,
@@ -27,7 +27,7 @@ import { MatDividerModule } from '@angular/material/divider'; // ADD THIS
     MatDatepickerModule,
     MatNativeDateModule,
     MatDialogModule,
-    MatDividerModule 
+    MatDividerModule
   ],
   template: `
     <div class="reschedule-container">
@@ -36,9 +36,7 @@ import { MatDividerModule } from '@angular/material/divider'; // ADD THIS
           <mat-card-title>Reschedule Appointment</mat-card-title>
           <mat-card-subtitle>Appointment ID: {{appointment?.id}}</mat-card-subtitle>
         </mat-card-header>
-        
         <mat-card-content>
-          <!-- Current Appointment Details -->
           <div class="current-appointment" *ngIf="appointment">
             <h3>Current Appointment</h3>
             <div class="detail-item">
@@ -54,13 +52,9 @@ import { MatDividerModule } from '@angular/material/divider'; // ADD THIS
               <strong>Duration:</strong> {{appointment.duration}} minutes
             </div>
           </div>
-
           <mat-divider></mat-divider>
-
-          <!-- Reschedule Form -->
           <form [formGroup]="rescheduleForm" (ngSubmit)="onSubmit()" class="reschedule-form">
             <h3>Select New Date & Time</h3>
-            
             <div class="row">
               <mat-form-field appearance="outline" class="half-width">
                 <mat-label>New Date</mat-label>
@@ -71,7 +65,6 @@ import { MatDividerModule } from '@angular/material/divider'; // ADD THIS
                   Date is required
                 </mat-error>
               </mat-form-field>
-
               <mat-form-field appearance="outline" class="half-width">
                 <mat-label>New Time</mat-label>
                 <input matInput type="time" formControlName="newTime">
@@ -80,12 +73,10 @@ import { MatDividerModule } from '@angular/material/divider'; // ADD THIS
                 </mat-error>
               </mat-form-field>
             </div>
-
             <div class="duration-info">
               <p><strong>Duration:</strong> {{appointment?.duration}} minutes</p>
               <p><strong>New End Time:</strong> {{calculateEndTime()}}</p>
             </div>
-
             <div class="form-actions">
               <button mat-button type="button" (click)="goBack()">Cancel</button>
               <button mat-raised-button color="primary" type="submit" [disabled]="!rescheduleForm.valid || loading">
@@ -163,7 +154,6 @@ export class RescheduleAppointmentComponent implements OnInit {
   appointment: any;
   loading = false;
   minDate: Date;
-
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
@@ -173,21 +163,18 @@ export class RescheduleAppointmentComponent implements OnInit {
     private snackBar: MatSnackBar
   ) {
     this.rescheduleForm = this.createForm();
-    this.minDate = new Date(); // Today's date
+    this.minDate = new Date();
   }
-
   ngOnInit() {
     const appointmentId = this.route.snapshot.params['id'];
     this.loadAppointmentDetails(appointmentId);
   }
-
   createForm(): FormGroup {
     return this.fb.group({
       newDate: ['', Validators.required],
       newTime: ['', Validators.required]
     });
   }
-
   loadAppointmentDetails(appointmentId: number) {
     this.appointmentService.getAppointmentById(appointmentId).subscribe({
       next: (appointment) => {
@@ -200,23 +187,18 @@ export class RescheduleAppointmentComponent implements OnInit {
       }
     });
   }
-
   setInitialFormValues(appointment: any) {
     const currentDate = new Date(appointment.appointmentDateTime);
-    
-    // Set form with current appointment date/time
     this.rescheduleForm.patchValue({
       newDate: currentDate,
       newTime: this.formatTime(currentDate)
     });
   }
-
   formatTime(date: Date): string {
     const hours = date.getHours().toString().padStart(2, '0');
     const minutes = date.getMinutes().toString().padStart(2, '0');
     return `${hours}:${minutes}`;
   }
-
   formatDateTime(dateTime: string): string {
     return new Date(dateTime).toLocaleString('en-IN', {
       year: 'numeric',
@@ -227,44 +209,32 @@ export class RescheduleAppointmentComponent implements OnInit {
       hour12: true
     });
   }
-
   calculateEndTime(): string {
     if (!this.rescheduleForm.value.newDate || !this.rescheduleForm.value.newTime || !this.appointment) {
       return 'Please select date and time';
     }
-
     const date = new Date(this.rescheduleForm.value.newDate);
     const [hours, minutes] = this.rescheduleForm.value.newTime.split(':');
-    
     date.setHours(parseInt(hours), parseInt(minutes), 0, 0);
     const endTime = new Date(date.getTime() + this.appointment.duration * 60000);
-
     return endTime.toLocaleString('en-IN', {
       hour: '2-digit',
       minute: '2-digit',
       hour12: true
     });
   }
-
   onSubmit() {
     if (this.rescheduleForm.valid && this.appointment) {
       this.loading = true;
-
       const formValue = this.rescheduleForm.value;
-      
-      // Combine date and time into ISO string
       const date = new Date(formValue.newDate);
       const [hours, minutes] = formValue.newTime.split(':');
       date.setHours(parseInt(hours), parseInt(minutes), 0, 0);
-      
       const newDateTime = date.toISOString();
-
       this.appointmentService.rescheduleAppointment(this.appointment.id, newDateTime).subscribe({
         next: (updatedAppointment) => {
           this.loading = false;
           this.snackBar.open('Appointment rescheduled successfully!', 'Close', { duration: 5000 });
-          
-          // Redirect based on user role
           if (this.authService.isCustomer()) {
             this.router.navigate(['/customer/dashboard']);
           } else if (this.authService.isProvider()) {
@@ -279,7 +249,6 @@ export class RescheduleAppointmentComponent implements OnInit {
       });
     }
   }
-
   goBack() {
     if (this.authService.isCustomer()) {
       this.router.navigate(['/customer/dashboard']);

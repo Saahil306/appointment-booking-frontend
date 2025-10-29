@@ -8,7 +8,6 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { AuthService } from '../../services/auth.service';
-
 @Component({
   selector: 'app-register-customer',
   standalone: true,
@@ -28,7 +27,6 @@ import { AuthService } from '../../services/auth.service';
         <mat-card-header>
           <mat-card-title>Register as Customer</mat-card-title>
         </mat-card-header>
-        
         <mat-card-content>
           <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
             <div class="row">
@@ -39,7 +37,6 @@ import { AuthService } from '../../services/auth.service';
                   First name is required
                 </mat-error>
               </mat-form-field>
-
               <mat-form-field appearance="outline" class="half-width">
                 <mat-label>Last Name</mat-label>
                 <input matInput formControlName="lastName">
@@ -48,7 +45,6 @@ import { AuthService } from '../../services/auth.service';
                 </mat-error>
               </mat-form-field>
             </div>
-
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Email</mat-label>
               <input matInput formControlName="email" type="email">
@@ -59,7 +55,6 @@ import { AuthService } from '../../services/auth.service';
                 Please enter a valid email
               </mat-error>
             </mat-form-field>
-
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Phone</mat-label>
               <input matInput formControlName="phone">
@@ -67,7 +62,6 @@ import { AuthService } from '../../services/auth.service';
                 Phone is required
               </mat-error>
             </mat-form-field>
-
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Password</mat-label>
               <input matInput formControlName="password" type="password">
@@ -78,34 +72,28 @@ import { AuthService } from '../../services/auth.service';
                 Password must be at least 6 characters
               </mat-error>
             </mat-form-field>
-
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Address</mat-label>
               <input matInput formControlName="address">
             </mat-form-field>
-
             <div class="row">
               <mat-form-field appearance="outline" class="half-width">
                 <mat-label>City</mat-label>
                 <input matInput formControlName="city">
               </mat-form-field>
-
               <mat-form-field appearance="outline" class="half-width">
                 <mat-label>State</mat-label>
                 <input matInput formControlName="state">
               </mat-form-field>
             </div>
-
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Zip Code</mat-label>
               <input matInput formControlName="zipCode">
             </mat-form-field>
-
             <button mat-raised-button color="primary" class="full-width" type="submit" [disabled]="!registerForm.valid || loading">
               {{ loading ? 'Registering...' : 'Register' }}
             </button>
           </form>
-
           <div class="login-link">
             <p>Already have an account? <a routerLink="/login" class="link">Login here</a></p>
           </div>
@@ -155,7 +143,6 @@ import { AuthService } from '../../services/auth.service';
 export class RegisterCustomerComponent {
   registerForm: FormGroup;
   loading = false;
-
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
@@ -174,7 +161,6 @@ export class RegisterCustomerComponent {
       zipCode: ['']
     });
   }
-
   onSubmit() {
     if (this.registerForm.valid) {
       this.loading = true;

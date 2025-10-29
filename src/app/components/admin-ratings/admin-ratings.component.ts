@@ -15,7 +15,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { AuthService } from '../../services/auth.service';
 import { AdminService } from '../../services/admin.service';
 import { Rating } from '../../models/rating.model';
-
 @Component({
   selector: 'app-admin-ratings',
   standalone: true,
@@ -42,15 +41,12 @@ import { Rating } from '../../models/rating.model';
           Back to Dashboard
         </button>
       </div>
-
       <mat-card class="ratings-card">
         <mat-card-header>
           <mat-card-title>Platform Ratings & Reviews</mat-card-title>
           <mat-card-subtitle>Manage and monitor all customer feedback</mat-card-subtitle>
         </mat-card-header>
-
         <mat-card-content>
-          <!-- Search and Filters -->
           <form [formGroup]="searchForm" (ngSubmit)="onSearch()" class="search-form">
             <div class="filter-row">
               <mat-form-field appearance="outline" class="search-field">
@@ -58,24 +54,19 @@ import { Rating } from '../../models/rating.model';
                 <input matInput formControlName="searchTerm" placeholder="Customer, provider, or comment...">
                 <mat-icon matSuffix>search</mat-icon>
               </mat-form-field>
-
               <button mat-raised-button color="primary" type="submit" [disabled]="loading">
                 <mat-icon>search</mat-icon>
                 Search
               </button>
-
               <button mat-button type="button" (click)="clearFilters()" *ngIf="hasActiveFilters()">
                 Clear Filters
               </button>
-
               <button mat-raised-button color="accent" (click)="loadRatingStats()">
                 <mat-icon>analytics</mat-icon>
                 View Stats
               </button>
             </div>
           </form>
-
-          <!-- Rating Statistics -->
           <div class="stats-section" *ngIf="ratingStats">
             <h3>Rating Statistics</h3>
             <div class="stats-grid">
@@ -90,7 +81,7 @@ import { Rating } from '../../models/rating.model';
               <div class="stat-card" *ngFor="let dist of getRatingDistribution()">
                 <div class="stat-number">{{dist.count}}</div>
                 <div class="stat-label">
-                  <mat-icon *ngFor="let star of [1,2,3,4,5]" 
+                  <mat-icon *ngFor="let star of [1,2,3,4,5]"
                            [class.filled]="star <= dist.rating">
                     {{star <= dist.rating ? 'star' : 'star_border'}}
                   </mat-icon>
@@ -98,27 +89,19 @@ import { Rating } from '../../models/rating.model';
               </div>
             </div>
           </div>
-
-          <!-- Ratings List -->
           <div class="ratings-list">
             <div class="results-header">
               <h3>All Ratings ({{ratings.length}} total)</h3>
             </div>
-
-            <!-- Loading State -->
             <div *ngIf="loading" class="loading">
               <mat-spinner diameter="40"></mat-spinner>
               <p>Loading ratings...</p>
             </div>
-
-            <!-- No Results -->
             <div *ngIf="!loading && ratings.length === 0" class="no-ratings">
               <mat-icon>reviews</mat-icon>
               <h3>No ratings found</h3>
               <p>No customer ratings available yet.</p>
             </div>
-
-            <!-- Ratings Grid -->
             <div class="ratings-grid" *ngIf="!loading && ratings.length > 0">
               <mat-card *ngFor="let rating of ratings" class="rating-card">
                 <mat-card-header>
@@ -131,24 +114,21 @@ import { Rating } from '../../models/rating.model';
                     {{formatDate(rating.createdAt)}}
                   </mat-card-subtitle>
                   <div class="rating-badge">
-                    <mat-icon *ngFor="let star of [1,2,3,4,5]" 
+                    <mat-icon *ngFor="let star of [1,2,3,4,5]"
                              [class.filled]="star <= rating.rating">
                       {{star <= rating.rating ? 'star' : 'star_border'}}
                     </mat-icon>
                     <span class="rating-value">{{rating.rating}}/5</span>
                   </div>
                 </mat-card-header>
-
                 <mat-card-content>
                   <div class="appointment-info">
-                    <strong>Appointment:</strong> {{rating.appointment.serviceType}} • 
+                    <strong>Appointment:</strong> {{rating.appointment.serviceType}} •
                     {{formatDateTime(rating.appointment.appointmentDateTime)}}
                   </div>
-
                   <div class="rating-comment" *ngIf="rating.comment">
                     <p>"{{rating.comment}}"</p>
                   </div>
-
                   <div class="contact-info">
                     <div class="contact-item">
                       <strong>Customer:</strong> {{rating.customer.email}} • {{rating.customer.phone}}
@@ -158,7 +138,6 @@ import { Rating } from '../../models/rating.model';
                     </div>
                   </div>
                 </mat-card-content>
-
                 <mat-card-actions>
                   <button mat-button color="primary" (click)="viewCustomer(rating.customer.id)">
                     <mat-icon>person</mat-icon>
@@ -347,7 +326,6 @@ export class AdminRatingsComponent implements OnInit {
   ratingStats: any = null;
   loading = false;
   currentUser: any;
-
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
@@ -357,7 +335,6 @@ export class AdminRatingsComponent implements OnInit {
   ) {
     this.searchForm = this.createForm();
   }
-
   ngOnInit() {
     this.currentUser = this.authService.getCurrentUser();
     if (!this.currentUser || !this.authService.isAdmin()) {
@@ -367,13 +344,11 @@ export class AdminRatingsComponent implements OnInit {
     this.loadAllRatings();
     this.loadRatingStats();
   }
-
   createForm(): FormGroup {
     return this.fb.group({
       searchTerm: ['']
     });
   }
-
   loadAllRatings() {
     this.loading = true;
     this.adminService.getAllRatings().subscribe({
@@ -387,7 +362,6 @@ export class AdminRatingsComponent implements OnInit {
       }
     });
   }
-
   loadRatingStats() {
     this.adminService.getRatingStatistics().subscribe({
       next: (stats) => {
@@ -398,12 +372,10 @@ export class AdminRatingsComponent implements OnInit {
       }
     });
   }
-
   onSearch() {
     if (this.searchForm.valid) {
       this.loading = true;
       const searchTerm = this.searchForm.value.searchTerm;
-
       if (searchTerm) {
         this.adminService.searchRatings(searchTerm).subscribe({
           next: (ratings) => {
@@ -420,19 +392,15 @@ export class AdminRatingsComponent implements OnInit {
       }
     }
   }
-
   clearFilters() {
     this.searchForm.reset({ searchTerm: '' });
     this.loadAllRatings();
   }
-
   hasActiveFilters(): boolean {
     return !!this.searchForm.value.searchTerm;
   }
-
   getRatingDistribution() {
     if (!this.ratingStats?.ratingDistribution) return [];
-    
     const distribution = [];
     for (let i = 5; i >= 1; i--) {
       distribution.push({
@@ -442,7 +410,6 @@ export class AdminRatingsComponent implements OnInit {
     }
     return distribution;
   }
-
   formatDate(dateString: string): string {
     return new Date(dateString).toLocaleDateString('en-IN', {
       year: 'numeric',
@@ -450,7 +417,6 @@ export class AdminRatingsComponent implements OnInit {
       day: 'numeric'
     });
   }
-
   formatDateTime(dateString: string): string {
     return new Date(dateString).toLocaleString('en-IN', {
       year: 'numeric',
@@ -460,19 +426,15 @@ export class AdminRatingsComponent implements OnInit {
       minute: '2-digit'
     });
   }
-
   viewCustomer(customerId: number) {
     this.router.navigate(['/admin/user', customerId]);
   }
-
   viewProvider(providerId: number) {
     this.router.navigate(['/admin/user', providerId]);
   }
-
   viewAppointment(appointmentId: number) {
     this.router.navigate(['/admin/appointment', appointmentId]);
   }
-
   goBack() {
     this.router.navigate(['/admin/dashboard']);
   }

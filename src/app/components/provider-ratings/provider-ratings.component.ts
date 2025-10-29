@@ -10,7 +10,6 @@ import { AuthService } from '../../services/auth.service';
 import { RatingService } from '../../services/rating.service';
 import { UserService } from '../../services/user.service';
 import { Rating, RatingStats } from '../../models/rating.model';
-
 @Component({
   selector: 'app-provider-ratings',
   standalone: true,
@@ -31,20 +30,17 @@ import { Rating, RatingStats } from '../../models/rating.model';
           Back to Dashboard
         </button>
       </div>
-
       <mat-card class="ratings-card">
         <mat-card-header>
           <mat-card-title>Customer Reviews</mat-card-title>
           <mat-card-subtitle>Feedback from your customers</mat-card-subtitle>
         </mat-card-header>
-
         <mat-card-content>
-          <!-- Rating Stats -->
           <div class="rating-stats" *ngIf="ratingStats">
             <div class="overall-rating">
               <div class="average-rating">{{ratingStats.averageRating}}</div>
               <div class="stars">
-                <mat-icon *ngFor="let star of getStars(ratingStats.averageRating)" 
+                <mat-icon *ngFor="let star of getStars(ratingStats.averageRating)"
                          [class.half]="star === 0.5"
                          [class.full]="star === 1">
                   {{star === 0.5 ? 'star_half' : 'star'}}
@@ -53,15 +49,13 @@ import { Rating, RatingStats } from '../../models/rating.model';
               <div class="rating-count">Based on {{ratingStats.ratingCount}} reviews</div>
             </div>
           </div>
-
-          <!-- Ratings List -->
           <div class="ratings-list" *ngIf="ratings.length > 0">
             <div *ngFor="let rating of ratings" class="rating-item">
               <div class="rating-header">
                 <div class="customer-info">
                   <strong>{{rating.customer.firstName}} {{rating.customer.lastName}}</strong>
                   <div class="rating-stars">
-                    <mat-icon *ngFor="let star of [1,2,3,4,5]" 
+                    <mat-icon *ngFor="let star of [1,2,3,4,5]"
                              [class.filled]="star <= rating.rating">
                       {{star <= rating.rating ? 'star' : 'star_border'}}
                     </mat-icon>
@@ -69,19 +63,15 @@ import { Rating, RatingStats } from '../../models/rating.model';
                 </div>
                 <div class="rating-date">{{formatDate(rating.createdAt)}}</div>
               </div>
-              
               <div class="rating-comment" *ngIf="rating.comment">
                 "{{rating.comment}}"
               </div>
-
               <div class="appointment-info">
-                Service: {{rating.appointment.serviceType}} • 
+                Service: {{rating.appointment.serviceType}} •
                 {{formatDate(rating.appointment.appointmentDateTime)}}
               </div>
             </div>
           </div>
-
-          <!-- No Ratings -->
           <div *ngIf="ratings.length === 0 && !loading" class="no-ratings">
             <mat-icon>reviews</mat-icon>
             <h3>No Reviews Yet</h3>
@@ -90,8 +80,6 @@ import { Rating, RatingStats } from '../../models/rating.model';
           </div>
         </mat-card-content>
       </mat-card>
-
-      <!-- Loading State -->
       <div *ngIf="loading" class="loading">
         <mat-spinner diameter="50"></mat-spinner>
         <p>Loading reviews...</p>
@@ -219,7 +207,6 @@ export class ProviderRatingsComponent implements OnInit {
   ratingStats: RatingStats | null = null;
   loading = false;
   currentUser: any;
-
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -227,8 +214,7 @@ export class ProviderRatingsComponent implements OnInit {
     private ratingService: RatingService,
     private userService: UserService,
     private snackBar: MatSnackBar
-  ) {}
-
+  ) { }
   ngOnInit() {
     this.currentUser = this.authService.getCurrentUser();
     if (!this.currentUser || !this.authService.isProvider()) {
@@ -237,11 +223,8 @@ export class ProviderRatingsComponent implements OnInit {
     }
     this.loadRatings();
   }
-
   loadRatings() {
     this.loading = true;
-    
-    // Load ratings and stats in parallel
     this.ratingService.getProviderRatings(this.currentUser.id).subscribe({
       next: (ratings) => {
         this.ratings = ratings;
@@ -252,7 +235,6 @@ export class ProviderRatingsComponent implements OnInit {
         this.snackBar.open('Error loading reviews', 'Close', { duration: 3000 });
       }
     });
-
     this.ratingService.getProviderRatingStats(this.currentUser.id).subscribe({
       next: (stats) => {
         this.ratingStats = stats;
@@ -262,12 +244,10 @@ export class ProviderRatingsComponent implements OnInit {
       }
     });
   }
-
   getStars(averageRating: number): number[] {
     const stars = [];
     const fullStars = Math.floor(averageRating);
     const hasHalfStar = averageRating % 1 >= 0.5;
-
     for (let i = 0; i < fullStars; i++) {
       stars.push(1);
     }
@@ -279,7 +259,6 @@ export class ProviderRatingsComponent implements OnInit {
     }
     return stars;
   }
-
   formatDate(dateString: string): string {
     return new Date(dateString).toLocaleDateString('en-IN', {
       year: 'numeric',
@@ -287,7 +266,6 @@ export class ProviderRatingsComponent implements OnInit {
       day: 'numeric'
     });
   }
-
   goBack() {
     this.router.navigate(['/provider/dashboard']);
   }

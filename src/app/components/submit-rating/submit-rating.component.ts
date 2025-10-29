@@ -9,11 +9,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatDividerModule } from '@angular/material/divider'; // ADD THIS
+import { MatDividerModule } from '@angular/material/divider';
 import { AuthService } from '../../services/auth.service';
 import { RatingService } from '../../services/rating.service';
 import { AppointmentService } from '../../services/appointment.service';
-
 @Component({
   selector: 'app-submit-rating',
   standalone: true,
@@ -28,7 +27,7 @@ import { AppointmentService } from '../../services/appointment.service';
     MatSnackBarModule,
     MatIconModule,
     MatProgressSpinnerModule,
-    MatDividerModule // ADD THIS
+    MatDividerModule
   ],
   template: `
     <div class="container">
@@ -37,9 +36,7 @@ import { AppointmentService } from '../../services/appointment.service';
           <mat-card-title>Rate Your Experience</mat-card-title>
           <mat-card-subtitle>Appointment ID: {{appointment?.id}}</mat-card-subtitle>
         </mat-card-header>
-        
         <mat-card-content>
-          <!-- Appointment Details -->
           <div class="appointment-details" *ngIf="appointment">
             <h3>Appointment Details</h3>
             <div class="detail-item">
@@ -52,22 +49,17 @@ import { AppointmentService } from '../../services/appointment.service';
               <strong>Date:</strong> {{formatDateTime(appointment.appointmentDateTime)}}
             </div>
           </div>
-
           <mat-divider></mat-divider>
-
-          <!-- Rating Form -->
           <form [formGroup]="ratingForm" (ngSubmit)="onSubmit()" class="rating-form">
             <h3>How was your experience?</h3>
-            
-            <!-- Star Rating -->
             <div class="star-rating">
               <div class="rating-label">
                 <strong>Rating:</strong>
                 <span class="rating-value">{{ratingForm.get('rating')?.value || 0}}/5</span>
               </div>
               <div class="stars">
-                <button type="button" 
-                        *ngFor="let star of [1,2,3,4,5]" 
+                <button type="button"
+                        *ngFor="let star of [1,2,3,4,5]"
                         (click)="setRating(star)"
                         class="star-button">
                   <mat-icon [class.filled]="star <= (ratingForm.get('rating')?.value || 0)">
@@ -76,13 +68,10 @@ import { AppointmentService } from '../../services/appointment.service';
                 </button>
               </div>
             </div>
-
-            <!-- Comment -->
             <mat-form-field appearance="outline" class="full-width">
               <mat-label>Your Review (Optional)</mat-label>
               <textarea matInput formControlName="comment" rows="4" placeholder="Share your experience with this service provider..."></textarea>
             </mat-form-field>
-
             <div class="form-actions">
               <button mat-button type="button" (click)="goBack()">Cancel</button>
               <button mat-raised-button color="primary" type="submit" [disabled]="!ratingForm.valid || loading">
@@ -92,8 +81,6 @@ import { AppointmentService } from '../../services/appointment.service';
           </form>
         </mat-card-content>
       </mat-card>
-
-      <!-- Loading State -->
       <div *ngIf="loading" class="loading">
         <mat-spinner diameter="50"></mat-spinner>
         <p>Loading appointment details...</p>
@@ -189,7 +176,6 @@ export class SubmitRatingComponent implements OnInit {
   appointment: any;
   loading = false;
   currentUser: any;
-
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
@@ -201,7 +187,6 @@ export class SubmitRatingComponent implements OnInit {
   ) {
     this.ratingForm = this.createForm();
   }
-
   ngOnInit() {
     this.currentUser = this.authService.getCurrentUser();
     if (!this.currentUser || !this.authService.isCustomer()) {
@@ -210,24 +195,19 @@ export class SubmitRatingComponent implements OnInit {
     }
     this.loadAppointmentDetails();
   }
-
   createForm(): FormGroup {
     return this.fb.group({
       rating: [0, [Validators.required, Validators.min(1), Validators.max(5)]],
       comment: ['']
     });
   }
-
   loadAppointmentDetails() {
     this.loading = true;
     const appointmentId = this.route.snapshot.params['id'];
-    
     this.appointmentService.getAppointmentById(appointmentId).subscribe({
       next: (appointment) => {
         this.appointment = appointment;
         this.loading = false;
-        
-        // Check if appointment is completed
         if (appointment.status !== 'COMPLETED') {
           this.snackBar.open('You can only rate completed appointments', 'Close', { duration: 5000 });
           this.goBack();
@@ -240,11 +220,9 @@ export class SubmitRatingComponent implements OnInit {
       }
     });
   }
-
   setRating(rating: number) {
     this.ratingForm.patchValue({ rating: rating });
   }
-
   formatDateTime(dateTime: string): string {
     return new Date(dateTime).toLocaleString('en-IN', {
       year: 'numeric',
@@ -254,11 +232,9 @@ export class SubmitRatingComponent implements OnInit {
       minute: '2-digit'
     });
   }
-
   onSubmit() {
     if (this.ratingForm.valid && this.appointment) {
       this.loading = true;
-
       const ratingData = {
         customerId: this.currentUser.id,
         providerId: this.appointment.providerId,
@@ -266,7 +242,6 @@ export class SubmitRatingComponent implements OnInit {
         rating: this.ratingForm.value.rating,
         comment: this.ratingForm.value.comment
       };
-
       this.ratingService.submitRating(ratingData).subscribe({
         next: (rating) => {
           this.loading = false;
@@ -281,7 +256,6 @@ export class SubmitRatingComponent implements OnInit {
       });
     }
   }
-
   goBack() {
     this.router.navigate(['/customer/dashboard']);
   }

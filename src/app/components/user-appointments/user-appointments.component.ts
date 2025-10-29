@@ -16,7 +16,6 @@ import { AdminService } from '../../services/admin.service';
 import { UserService } from '../../services/user.service';
 import { AppointmentService } from '../../services/appointment.service';
 import { Appointment, AppointmentStatus } from '../../models/appointment.model';
-
 @Component({
   selector: 'app-user-appointments',
   standalone: true,
@@ -42,7 +41,6 @@ import { Appointment, AppointmentStatus } from '../../models/appointment.model';
           Back to User Details
         </button>
       </div>
-
       <mat-card class="appointments-card">
         <mat-card-header>
           <mat-card-title>
@@ -62,15 +60,12 @@ import { Appointment, AppointmentStatus } from '../../models/appointment.model';
                 <mat-option value="CANCELLED">Cancelled</mat-option>
               </mat-select>
             </mat-form-field>
-
             <button mat-button (click)="clearFilters()" *ngIf="selectedStatus !== 'ALL'">
               Clear Filter
             </button>
           </div>
         </mat-card-header>
-
         <mat-card-content>
-          <!-- Statistics -->
           <div class="stats" *ngIf="appointments.length > 0">
             <div class="stat-item">
               <span class="stat-number">{{pendingAppointments.length}}</span>
@@ -89,10 +84,7 @@ import { Appointment, AppointmentStatus } from '../../models/appointment.model';
               <span class="stat-label">Cancelled</span>
             </div>
           </div>
-
-          <!-- Appointments Table -->
           <table mat-table [dataSource]="filteredAppointments" class="mat-elevation-z8">
-            <!-- Customer/Provider Column -->
             <ng-container [matColumnDef]="isCustomerView ? 'provider' : 'customer'">
               <th mat-header-cell *matHeaderCellDef>
                 {{isCustomerView ? 'Service Provider' : 'Customer'}}
@@ -101,28 +93,20 @@ import { Appointment, AppointmentStatus } from '../../models/appointment.model';
                 {{isCustomerView ? appointment.providerName : appointment.customerName}}
               </td>
             </ng-container>
-
-            <!-- Date Column -->
             <ng-container matColumnDef="date">
               <th mat-header-cell *matHeaderCellDef>Date & Time</th>
               <td mat-cell *matCellDef="let appointment">
                 {{formatDateTime(appointment.appointmentDateTime)}}
               </td>
             </ng-container>
-
-            <!-- Service Type Column -->
             <ng-container matColumnDef="serviceType">
               <th mat-header-cell *matHeaderCellDef>Service Type</th>
               <td mat-cell *matCellDef="let appointment">{{appointment.serviceType}}</td>
             </ng-container>
-
-            <!-- Duration Column -->
             <ng-container matColumnDef="duration">
               <th mat-header-cell *matHeaderCellDef>Duration</th>
               <td mat-cell *matCellDef="let appointment">{{appointment.duration}} minutes</td>
             </ng-container>
-
-            <!-- Status Column -->
             <ng-container matColumnDef="status">
               <th mat-header-cell *matHeaderCellDef>Status</th>
               <td mat-cell *matCellDef="let appointment">
@@ -131,17 +115,15 @@ import { Appointment, AppointmentStatus } from '../../models/appointment.model';
                 </mat-chip>
               </td>
             </ng-container>
-
-            <!-- Actions Column -->
             <ng-container matColumnDef="actions">
               <th mat-header-cell *matHeaderCellDef>Actions</th>
               <td mat-cell *matCellDef="let appointment">
-                <button mat-icon-button color="primary" 
+                <button mat-icon-button color="primary"
                         (click)="viewAppointmentDetails(appointment.id)"
                         matTooltip="View Details">
                   <mat-icon>visibility</mat-icon>
                 </button>
-                <button mat-icon-button color="warn" 
+                <button mat-icon-button color="warn"
                         *ngIf="appointment.status !== 'CANCELLED' && appointment.status !== 'COMPLETED'"
                         (click)="cancelAppointment(appointment.id)"
                         matTooltip="Cancel Appointment">
@@ -149,11 +131,9 @@ import { Appointment, AppointmentStatus } from '../../models/appointment.model';
                 </button>
               </td>
             </ng-container>
-
             <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
             <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
           </table>
-
           <div *ngIf="filteredAppointments.length === 0" class="no-data">
             <mat-icon>event_busy</mat-icon>
             <p *ngIf="selectedStatus === 'ALL'">No appointments found.</p>
@@ -164,14 +144,10 @@ import { Appointment, AppointmentStatus } from '../../models/appointment.model';
           </div>
         </mat-card-content>
       </mat-card>
-
-      <!-- Loading State -->
       <div *ngIf="loading" class="loading">
         <mat-spinner diameter="50"></mat-spinner>
         <p>Loading appointments...</p>
       </div>
-
-      <!-- Error State -->
       <div *ngIf="error" class="error">
         <mat-icon color="warn">error</mat-icon>
         <p>{{error}}</p>
@@ -258,7 +234,6 @@ export class UserAppointmentsComponent implements OnInit {
   loading = false;
   error = '';
   displayedColumns: string[] = [];
-
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -267,37 +242,28 @@ export class UserAppointmentsComponent implements OnInit {
     private userService: UserService,
     private appointmentService: AppointmentService,
     private snackBar: MatSnackBar
-  ) {}
-
+  ) { }
   ngOnInit() {
     this.loadUserAndAppointments();
   }
-
   get isCustomerView(): boolean {
     return this.user?.role === 'CUSTOMER';
   }
-
   get pendingAppointments() {
     return this.appointments.filter(a => a.status === 'PENDING');
   }
-
   get confirmedAppointments() {
     return this.appointments.filter(a => a.status === 'CONFIRMED');
   }
-
   get completedAppointments() {
     return this.appointments.filter(a => a.status === 'COMPLETED');
   }
-
   get cancelledAppointments() {
     return this.appointments.filter(a => a.status === 'CANCELLED');
   }
-
   loadUserAndAppointments() {
     this.loading = true;
     const userId = this.route.snapshot.params['id'];
-    
-    // Load user details first
     this.userService.getUserById(userId).subscribe({
       next: (user) => {
         this.user = user;
@@ -311,7 +277,6 @@ export class UserAppointmentsComponent implements OnInit {
       }
     });
   }
-
   setDisplayedColumns() {
     if (this.isCustomerView) {
       this.displayedColumns = ['provider', 'date', 'serviceType', 'duration', 'status', 'actions'];
@@ -319,7 +284,6 @@ export class UserAppointmentsComponent implements OnInit {
       this.displayedColumns = ['customer', 'date', 'serviceType', 'duration', 'status', 'actions'];
     }
   }
-
   loadAppointments(userId: number, role: string) {
     if (role === 'CUSTOMER') {
       this.appointmentService.getCustomerAppointments(userId).subscribe({
@@ -352,7 +316,6 @@ export class UserAppointmentsComponent implements OnInit {
       this.snackBar.open('Admin users do not have appointments', 'Close', { duration: 3000 });
     }
   }
-
   applyFilter() {
     if (this.selectedStatus === 'ALL') {
       this.filteredAppointments = this.appointments;
@@ -362,12 +325,10 @@ export class UserAppointmentsComponent implements OnInit {
       );
     }
   }
-
   clearFilters() {
     this.selectedStatus = 'ALL';
     this.applyFilter();
   }
-
   formatDateTime(dateTime: string): string {
     return new Date(dateTime).toLocaleString('en-IN', {
       year: 'numeric',
@@ -377,7 +338,6 @@ export class UserAppointmentsComponent implements OnInit {
       minute: '2-digit'
     });
   }
-
   getStatusColor(status: string): string {
     switch (status) {
       case 'PENDING': return 'accent';
@@ -387,7 +347,6 @@ export class UserAppointmentsComponent implements OnInit {
       default: return '';
     }
   }
-
   getUserTypeText(): string {
     switch (this.user?.role) {
       case 'CUSTOMER': return 'Customer';
@@ -396,12 +355,9 @@ export class UserAppointmentsComponent implements OnInit {
       default: return 'User';
     }
   }
-
   viewAppointmentDetails(appointmentId: number) {
-    // Open appointment details in new tab or navigate
     this.router.navigate(['/admin/appointment', appointmentId]);
   }
-
   cancelAppointment(appointmentId: number) {
     if (confirm('Are you sure you want to cancel this appointment?')) {
       this.appointmentService.cancelAppointment(appointmentId).subscribe({
@@ -415,7 +371,6 @@ export class UserAppointmentsComponent implements OnInit {
       });
     }
   }
-
   goBack() {
     this.router.navigate(['/admin/user', this.user.id]);
   }

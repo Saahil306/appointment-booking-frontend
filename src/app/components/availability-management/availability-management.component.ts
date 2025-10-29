@@ -12,7 +12,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { AuthService } from '../../services/auth.service';
 import { AvailabilityService } from '../../services/availability.service';
-
 @Component({
   selector: 'app-availability-management',
   standalone: true,
@@ -36,7 +35,6 @@ import { AvailabilityService } from '../../services/availability.service';
           <mat-card-title>Manage Availability</mat-card-title>
           <mat-card-subtitle>Set your working hours for each day</mat-card-subtitle>
         </mat-card-header>
-        
         <mat-card-content>
           <form [formGroup]="availabilityForm" (ngSubmit)="onSubmit()">
             <div formArrayName="availabilities">
@@ -49,7 +47,6 @@ import { AvailabilityService } from '../../services/availability.service';
                         Available
                       </mat-checkbox>
                     </div>
-                    
                     <div class="time-fields" *ngIf="getAvailableControl(i).value">
                       <mat-form-field appearance="outline" class="time-field">
                         <mat-label>Start Time</mat-label>
@@ -58,7 +55,6 @@ import { AvailabilityService } from '../../services/availability.service';
                           Start time is required
                         </mat-error>
                       </mat-form-field>
-
                       <mat-form-field appearance="outline" class="time-field">
                         <mat-label>End Time</mat-label>
                         <input matInput type="time" [formControl]="getEndTimeControl(i)" required>
@@ -67,7 +63,6 @@ import { AvailabilityService } from '../../services/availability.service';
                         </mat-error>
                       </mat-form-field>
                     </div>
-
                     <div *ngIf="!getAvailableControl(i).value" class="not-available">
                       <p>Not available on {{day}}</p>
                     </div>
@@ -75,7 +70,6 @@ import { AvailabilityService } from '../../services/availability.service';
                 </mat-card>
               </div>
             </div>
-
             <div class="form-actions">
               <button mat-button type="button" routerLink="/provider/dashboard">Cancel</button>
               <button mat-raised-button color="primary" type="submit" [disabled]="loading || !isFormValid()">
@@ -137,7 +131,6 @@ export class AvailabilityManagementComponent implements OnInit {
   days = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'];
   loading = false;
   currentUser: any;
-  
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
@@ -149,7 +142,6 @@ export class AvailabilityManagementComponent implements OnInit {
       availabilities: this.fb.array([])
     });
   }
-
   ngOnInit() {
     this.currentUser = this.authService.getCurrentUser();
     if (!this.currentUser || !this.authService.isProvider()) {
@@ -159,52 +151,40 @@ export class AvailabilityManagementComponent implements OnInit {
     this.initializeForm();
     this.loadExistingAvailability();
   }
-
   get availabilities(): FormArray {
     return this.availabilityForm.get('availabilities') as FormArray;
   }
-
   getAvailableControl(index: number): FormControl {
     return (this.availabilities.at(index) as FormGroup).get('available') as FormControl;
   }
-
   getStartTimeControl(index: number): FormControl {
     return (this.availabilities.at(index) as FormGroup).get('startTime') as FormControl;
   }
-
   getEndTimeControl(index: number): FormControl {
     return (this.availabilities.at(index) as FormGroup).get('endTime') as FormControl;
   }
-
   initializeForm() {
-    // Clear existing form array
     while (this.availabilities.length !== 0) {
       this.availabilities.removeAt(0);
     }
-
-    // Initialize with default values (all available)
     this.days.forEach(day => {
       const dayGroup = this.fb.group({
         dayOfWeek: [day],
         startTime: ['09:00', Validators.required],
         endTime: ['17:00', Validators.required],
-        available: [true] // Default to available
+        available: [true]
       });
-      
       this.availabilities.push(dayGroup);
     });
   }
-
   loadExistingAvailability() {
     this.availabilityService.getProviderAvailability(this.currentUser.id).subscribe({
       next: (availabilities) => {
         console.log('Loaded availabilities from backend:', availabilities);
-        
         if (availabilities && availabilities.length > 0) {
           this.populateFormWithData(availabilities);
         } else {
           console.log('No existing availability found, using defaults');
-          // Keep default values (all available)
         }
       },
       error: (error) => {
@@ -213,11 +193,8 @@ export class AvailabilityManagementComponent implements OnInit {
       }
     });
   }
-
   populateFormWithData(availabilities: any[]) {
     console.log('Populating form with:', availabilities);
-    
-    // First, set all days to unavailable
     this.availabilities.controls.forEach((control, index) => {
       const dayGroup = control as FormGroup;
       dayGroup.patchValue({
@@ -226,34 +203,25 @@ export class AvailabilityManagementComponent implements OnInit {
         endTime: '17:00'
       });
     });
-
-    // Then update with actual data from backend
     availabilities.forEach(avail => {
       const dayIndex = this.days.indexOf(avail.dayOfWeek);
       console.log(`Processing ${avail.dayOfWeek} at index ${dayIndex}:`, avail);
-      
       if (dayIndex !== -1) {
         const dayGroup = this.availabilities.at(dayIndex) as FormGroup;
-        
-        // Format time from backend (remove seconds if present)
         const startTime = avail.startTime ? avail.startTime.substring(0, 5) : '09:00';
         const endTime = avail.endTime ? avail.endTime.substring(0, 5) : '17:00';
-        
         dayGroup.patchValue({
-          available: avail.available !== false, // Default to true if not specified
+          available: avail.available !== false,
           startTime: startTime,
           endTime: endTime
         });
-        
         console.log(`Updated ${avail.dayOfWeek}: available=${avail.available}, start=${startTime}, end=${endTime}`);
       }
     });
   }
-
   onDayToggle(index: number, event: any) {
     const isAvailable = event.checked;
     const dayGroup = this.availabilities.at(index) as FormGroup;
-    
     if (!isAvailable) {
       dayGroup.get('startTime')?.clearValidators();
       dayGroup.get('endTime')?.clearValidators();
@@ -261,32 +229,24 @@ export class AvailabilityManagementComponent implements OnInit {
       dayGroup.get('startTime')?.setValidators(Validators.required);
       dayGroup.get('endTime')?.setValidators(Validators.required);
     }
-    
     dayGroup.get('startTime')?.updateValueAndValidity();
     dayGroup.get('endTime')?.updateValueAndValidity();
   }
-
   isFormValid(): boolean {
     return this.availabilityForm.valid;
   }
-
   onSubmit() {
     if (this.availabilityForm.valid) {
       this.loading = true;
-      
       const formValue = this.availabilities.value;
       console.log('Form data before processing:', formValue);
-
-      // Process all days - including unavailable ones
       const availabilities = formValue.map((avail: any) => ({
         dayOfWeek: avail.dayOfWeek,
         startTime: avail.available ? avail.startTime + ':00' : '00:00:00',
         endTime: avail.available ? avail.endTime + ':00' : '00:00:00',
         available: avail.available
       }));
-
       console.log('Processed availability data for backend:', availabilities);
-
       this.availabilityService.setAvailability(this.currentUser.id, availabilities).subscribe({
         next: (response) => {
           console.log('Save successful:', response);

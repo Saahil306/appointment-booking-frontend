@@ -7,11 +7,10 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner'; // ADD THIS
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { AuthService } from '../../services/auth.service';
 import { AppointmentService } from '../../services/appointment.service';
 import { Appointment, AppointmentStatus } from '../../models/appointment.model';
-
 @Component({
   selector: 'app-appointment-details',
   standalone: true,
@@ -24,7 +23,7 @@ import { Appointment, AppointmentStatus } from '../../models/appointment.model';
     MatSnackBarModule,
     MatChipsModule,
     MatDividerModule,
-    MatProgressSpinnerModule // ADD THIS
+    MatProgressSpinnerModule
   ],
   template: `
     <div class="container">
@@ -34,7 +33,6 @@ import { Appointment, AppointmentStatus } from '../../models/appointment.model';
           Back to Dashboard
         </button>
       </div>
-
       <mat-card class="details-card" *ngIf="appointment">
         <mat-card-header>
           <mat-card-title>Appointment Details</mat-card-title>
@@ -45,10 +43,8 @@ import { Appointment, AppointmentStatus } from '../../models/appointment.model';
             </mat-chip>
           </div>
         </mat-card-header>
-
         <mat-card-content>
           <div class="details-grid">
-            <!-- Customer Information -->
             <div class="detail-section">
               <h3>Customer Information</h3>
               <div class="detail-item">
@@ -58,8 +54,6 @@ import { Appointment, AppointmentStatus } from '../../models/appointment.model';
                 <strong>Customer ID:</strong> {{appointment.customerId}}
               </div>
             </div>
-
-            <!-- Provider Information -->
             <div class="detail-section">
               <h3>Service Provider Information</h3>
               <div class="detail-item">
@@ -72,10 +66,7 @@ import { Appointment, AppointmentStatus } from '../../models/appointment.model';
                 <strong>Service Type:</strong> {{appointment.serviceType}}
               </div>
             </div>
-
             <mat-divider></mat-divider>
-
-            <!-- Appointment Details -->
             <div class="detail-section">
               <h3>Appointment Details</h3>
               <div class="detail-item">
@@ -88,22 +79,18 @@ import { Appointment, AppointmentStatus } from '../../models/appointment.model';
                 <strong>End Time:</strong> {{formatDateTime(appointment.endDateTime)}}
               </div>
               <div class="detail-item">
-                <strong>Status:</strong> 
+                <strong>Status:</strong>
                 <span [class]="'status-' + appointment.status.toLowerCase()">
                   {{appointment.status}}
                 </span>
               </div>
             </div>
-
-            <!-- Notes -->
             <div class="detail-section" *ngIf="appointment.notes">
               <h3>Additional Notes</h3>
               <div class="notes-content">
                 {{appointment.notes}}
               </div>
             </div>
-
-            <!-- Timestamps -->
             <div class="detail-section">
               <h3>Timestamps</h3>
               <div class="detail-item">
@@ -115,39 +102,35 @@ import { Appointment, AppointmentStatus } from '../../models/appointment.model';
             </div>
           </div>
         </mat-card-content>
-
         <mat-card-actions>
-          <!-- Customer Actions -->
           <div *ngIf="isCustomer()" class="action-buttons">
-            <button mat-raised-button color="accent" 
+            <button mat-raised-button color="accent"
                     (click)="rescheduleAppointment()"
                     [disabled]="appointment.status === 'CANCELLED' || appointment.status === 'COMPLETED'">
               <mat-icon>schedule</mat-icon>
               Reschedule
             </button>
-            <button mat-raised-button color="warn" 
+            <button mat-raised-button color="warn"
                     (click)="cancelAppointment()"
                     [disabled]="appointment.status === 'CANCELLED' || appointment.status === 'COMPLETED'">
               <mat-icon>cancel</mat-icon>
               Cancel Appointment
             </button>
           </div>
-
-          <!-- Provider Actions -->
           <div *ngIf="isProvider()" class="action-buttons">
-            <button mat-raised-button color="primary" 
+            <button mat-raised-button color="primary"
                     (click)="updateStatus(AppointmentStatus.CONFIRMED)"
                     *ngIf="appointment.status === AppointmentStatus.PENDING">
               <mat-icon>check_circle</mat-icon>
               Confirm Appointment
             </button>
-            <button mat-raised-button color="accent" 
+            <button mat-raised-button color="accent"
                     (click)="updateStatus(AppointmentStatus.COMPLETED)"
                     *ngIf="appointment.status === AppointmentStatus.CONFIRMED">
               <mat-icon>done_all</mat-icon>
               Mark as Completed
             </button>
-            <button mat-raised-button color="warn" 
+            <button mat-raised-button color="warn"
                     (click)="updateStatus(AppointmentStatus.CANCELLED)"
                     *ngIf="appointment.status !== AppointmentStatus.CANCELLED && appointment.status !== AppointmentStatus.COMPLETED">
               <mat-icon>cancel</mat-icon>
@@ -156,14 +139,10 @@ import { Appointment, AppointmentStatus } from '../../models/appointment.model';
           </div>
         </mat-card-actions>
       </mat-card>
-
-      <!-- Loading State -->
       <div *ngIf="loading" class="loading">
         <mat-spinner diameter="50"></mat-spinner>
         <p>Loading appointment details...</p>
       </div>
-
-      <!-- Error State -->
       <div *ngIf="error" class="error">
         <mat-icon color="warn">error</mat-icon>
         <p>{{error}}</p>
@@ -225,20 +204,20 @@ import { Appointment, AppointmentStatus } from '../../models/appointment.model';
       gap: 10px;
       flex-wrap: wrap;
     }
-    .status-pending { 
-      color: #ff9800; 
+    .status-pending {
+      color: #ff9800;
       font-weight: bold;
     }
-    .status-confirmed { 
-      color: #4caf50; 
+    .status-confirmed {
+      color: #4caf50;
       font-weight: bold;
     }
-    .status-cancelled { 
-      color: #f44336; 
+    .status-cancelled {
+      color: #f44336;
       font-weight: bold;
     }
-    .status-completed { 
-      color: #2196f3; 
+    .status-completed {
+      color: #2196f3;
       font-weight: bold;
     }
     .loading, .error {
@@ -258,23 +237,19 @@ export class AppointmentDetailsComponent implements OnInit {
   loading = false;
   error = '';
   AppointmentStatus = AppointmentStatus;
-
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private authService: AuthService,
     private appointmentService: AppointmentService,
     private snackBar: MatSnackBar
-  ) {}
-
+  ) { }
   ngOnInit() {
     this.loadAppointmentDetails();
   }
-
   loadAppointmentDetails() {
     this.loading = true;
     const appointmentId = this.route.snapshot.params['id'];
-    
     this.appointmentService.getAppointmentById(appointmentId).subscribe({
       next: (appointment) => {
         this.appointment = appointment;
@@ -287,16 +262,12 @@ export class AppointmentDetailsComponent implements OnInit {
       }
     });
   }
-
- // isCustomer() method mein add karo:
-isCustomer(): boolean {
-  return this.authService.isCustomer() || this.authService.isAdmin();
-}
-
-// isProvider() method mein add karo:
-isProvider(): boolean {
-  return this.authService.isProvider() || this.authService.isAdmin();
-}
+  isCustomer(): boolean {
+    return this.authService.isCustomer() || this.authService.isAdmin();
+  }
+  isProvider(): boolean {
+    return this.authService.isProvider() || this.authService.isAdmin();
+  }
   formatDateTime(dateTime: string): string {
     return new Date(dateTime).toLocaleString('en-IN', {
       year: 'numeric',
@@ -307,7 +278,6 @@ isProvider(): boolean {
       hour12: true
     });
   }
-
   getStatusColor(status: string): string {
     switch (status) {
       case 'PENDING': return 'accent';
@@ -317,30 +287,26 @@ isProvider(): boolean {
       default: return '';
     }
   }
-
-// goBack() method update karo:
-goBack() {
-  if (this.authService.isCustomer()) {
-    this.router.navigate(['/customer/dashboard']);
-  } else if (this.authService.isProvider()) {
-    this.router.navigate(['/provider/dashboard']);
-  } else if (this.authService.isAdmin()) {
-    this.router.navigate(['/admin/dashboard']);
-  } else {
-    this.router.navigate(['/login']);
+  goBack() {
+    if (this.authService.isCustomer()) {
+      this.router.navigate(['/customer/dashboard']);
+    } else if (this.authService.isProvider()) {
+      this.router.navigate(['/provider/dashboard']);
+    } else if (this.authService.isAdmin()) {
+      this.router.navigate(['/admin/dashboard']);
+    } else {
+      this.router.navigate(['/login']);
+    }
   }
-}
-
   rescheduleAppointment() {
     this.snackBar.open('Reschedule feature coming soon!', 'Close', { duration: 3000 });
   }
-
   cancelAppointment() {
     if (confirm('Are you sure you want to cancel this appointment?')) {
       this.appointmentService.cancelAppointment(this.appointment.id).subscribe({
         next: () => {
           this.snackBar.open('Appointment cancelled successfully', 'Close', { duration: 3000 });
-          this.loadAppointmentDetails(); // Refresh details
+          this.loadAppointmentDetails();
         },
         error: (error) => {
           this.snackBar.open('Error cancelling appointment', 'Close', { duration: 3000 });
@@ -348,20 +314,17 @@ goBack() {
       });
     }
   }
-
   updateStatus(status: AppointmentStatus) {
     const statusText = status.toLowerCase();
-    
     if (status === AppointmentStatus.CANCELLED) {
       if (!confirm('Are you sure you want to cancel this appointment?')) {
         return;
       }
     }
-
     this.appointmentService.updateAppointmentStatus(this.appointment.id, status).subscribe({
       next: () => {
         this.snackBar.open(`Appointment ${statusText} successfully`, 'Close', { duration: 3000 });
-        this.loadAppointmentDetails(); // Refresh details
+        this.loadAppointmentDetails();
       },
       error: (error) => {
         this.snackBar.open('Error updating appointment status', 'Close', { duration: 3000 });

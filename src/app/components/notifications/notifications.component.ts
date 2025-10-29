@@ -10,7 +10,6 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { MatChipsModule } from '@angular/material/chips';
 import { AuthService } from '../../services/auth.service';
 import { NotificationService } from '../../services/notification.service';
-
 @Component({
   selector: 'app-notifications',
   standalone: true,
@@ -42,10 +41,9 @@ import { NotificationService } from '../../services/notification.service';
             <button mat-button (click)="goBack()">Back to Dashboard</button>
           </div>
         </mat-card-header>
-        
         <mat-card-content>
           <mat-list>
-            <mat-list-item *ngFor="let notification of notifications" 
+            <mat-list-item *ngFor="let notification of notifications"
                           [class.unread]="!notification.read"
                           class="notification-item">
               <div matListItemIcon>
@@ -53,7 +51,6 @@ import { NotificationService } from '../../services/notification.service';
                   {{getNotificationIcon(notification.type)}}
                 </mat-icon>
               </div>
-              
               <div matListItemTitle>{{notification.title}}</div>
               <div matListItemLine>{{notification.message}}</div>
               <div matListItemMeta>
@@ -64,7 +61,6 @@ import { NotificationService } from '../../services/notification.service';
               </div>
             </mat-list-item>
           </mat-list>
-
           <div *ngIf="notifications.length === 0" class="no-data">
             <mat-icon>notifications_off</mat-icon>
             <p>No notifications found.</p>
@@ -114,14 +110,12 @@ export class NotificationsComponent implements OnInit {
   notifications: any[] = [];
   unreadCount = 0;
   currentUser: any;
-
   constructor(
     private authService: AuthService,
     private notificationService: NotificationService,
     private router: Router,
     private snackBar: MatSnackBar
-  ) {}
-
+  ) { }
   ngOnInit() {
     this.currentUser = this.authService.getCurrentUser();
     if (!this.currentUser) {
@@ -131,7 +125,6 @@ export class NotificationsComponent implements OnInit {
     this.loadNotifications();
     this.loadUnreadCount();
   }
-
   loadNotifications() {
     this.notificationService.getUserNotifications(this.currentUser.id).subscribe({
       next: (notifications) => {
@@ -142,7 +135,6 @@ export class NotificationsComponent implements OnInit {
       }
     });
   }
-
   loadUnreadCount() {
     this.notificationService.getUnreadNotificationCount(this.currentUser.id).subscribe({
       next: (count) => {
@@ -150,7 +142,6 @@ export class NotificationsComponent implements OnInit {
       }
     });
   }
-
   getNotificationIcon(type: string): string {
     switch (type) {
       case 'APPOINTMENT_CONFIRMATION': return 'event_available';
@@ -161,7 +152,6 @@ export class NotificationsComponent implements OnInit {
       default: return 'notifications';
     }
   }
-
   markAsRead(notificationId: number) {
     this.notificationService.markAsRead(notificationId).subscribe({
       next: () => {
@@ -173,7 +163,6 @@ export class NotificationsComponent implements OnInit {
       }
     });
   }
-
   markAllAsRead() {
     this.notificationService.markAllAsRead(this.currentUser.id).subscribe({
       next: () => {
@@ -186,7 +175,6 @@ export class NotificationsComponent implements OnInit {
       }
     });
   }
-
   goBack() {
     if (this.authService.isCustomer()) {
       this.router.navigate(['/customer/dashboard']);

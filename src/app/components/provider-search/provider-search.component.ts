@@ -17,7 +17,7 @@ import { AuthService } from '../../services/auth.service';
 import { SearchService } from '../../services/search.service';
 import { RatingService } from '../../services/rating.service';
 import { ServiceProvider } from '../../models/user.model';
-import { MatMenuModule } from '@angular/material/menu'; // ADD THIS
+import { MatMenuModule } from '@angular/material/menu';
 @Component({
   selector: 'app-provider-search',
   standalone: true,
@@ -36,7 +36,7 @@ import { MatMenuModule } from '@angular/material/menu'; // ADD THIS
     MatProgressSpinnerModule,
     MatChipsModule,
     MatTooltipModule,
-    MatMenuModule 
+    MatMenuModule
   ],
   template: `
     <div class="container">
@@ -45,9 +45,7 @@ import { MatMenuModule } from '@angular/material/menu'; // ADD THIS
           <mat-card-title>Find Service Providers</mat-card-title>
           <mat-card-subtitle>Search and filter to find the perfect service provider</mat-card-subtitle>
         </mat-card-header>
-        
         <mat-card-content>
-          <!-- Search Filters -->
           <form [formGroup]="searchForm" (ngSubmit)="onSearch()" class="search-form">
             <div class="filter-row">
               <mat-form-field appearance="outline" class="search-field">
@@ -55,7 +53,6 @@ import { MatMenuModule } from '@angular/material/menu'; // ADD THIS
                 <input matInput formControlName="searchTerm" placeholder="Name, service type, or keywords...">
                 <mat-icon matSuffix>search</mat-icon>
               </mat-form-field>
-
               <mat-form-field appearance="outline" class="service-type-field">
                 <mat-label>Service Type</mat-label>
                 <mat-select formControlName="serviceType">
@@ -65,23 +62,18 @@ import { MatMenuModule } from '@angular/material/menu'; // ADD THIS
                   </mat-option>
                 </mat-select>
               </mat-form-field>
-
               <mat-checkbox formControlName="availableToday" class="availability-checkbox">
                 Available Today
               </mat-checkbox>
-
               <button mat-raised-button color="primary" type="submit" [disabled]="loading">
                 <mat-icon>search</mat-icon>
                 Search
               </button>
-
               <button mat-button type="button" (click)="clearFilters()" *ngIf="hasActiveFilters()">
                 Clear Filters
               </button>
             </div>
           </form>
-
-          <!-- Search Results -->
           <div class="results-section">
             <div class="results-header">
               <h3>Search Results ({{providers.length}} providers found)</h3>
@@ -106,14 +98,10 @@ import { MatMenuModule } from '@angular/material/menu'; // ADD THIS
                 </mat-menu>
               </div>
             </div>
-
-            <!-- Loading State -->
             <div *ngIf="loading" class="loading">
               <mat-spinner diameter="40"></mat-spinner>
               <p>Searching providers...</p>
             </div>
-
-            <!-- No Results -->
             <div *ngIf="!loading && providers.length === 0 && hasSearched" class="no-results">
               <mat-icon>search_off</mat-icon>
               <h3>No providers found</h3>
@@ -122,8 +110,6 @@ import { MatMenuModule } from '@angular/material/menu'; // ADD THIS
                 Show All Providers
               </button>
             </div>
-
-            <!-- Providers Grid -->
             <div class="providers-grid" *ngIf="!loading && providers.length > 0">
               <mat-card *ngFor="let provider of providers" class="provider-card">
                 <mat-card-header>
@@ -135,7 +121,6 @@ import { MatMenuModule } from '@angular/material/menu'; // ADD THIS
                     <span class="rating-count">({{provider.ratingCount}})</span>
                   </div>
                 </mat-card-header>
-
                 <mat-card-content>
                   <div class="provider-info">
                     <div class="info-item" *ngIf="provider.qualification">
@@ -151,12 +136,10 @@ import { MatMenuModule } from '@angular/material/menu'; // ADD THIS
                       <span>₹{{provider.hourlyRate}}/hour</span>
                     </div>
                   </div>
-
                   <div class="provider-bio" *ngIf="provider.bio">
                     <p>{{provider.bio}}</p>
                   </div>
                 </mat-card-content>
-
                 <mat-card-actions>
                   <button mat-raised-button color="primary" (click)="bookAppointment(provider)">
                     <mat-icon>event_available</mat-icon>
@@ -304,8 +287,7 @@ export class ProviderSearchComponent implements OnInit {
   loading = false;
   hasSearched = false;
   currentSort = 'name';
-  currentUser: any; // ADD THIS MISSING PROPERTY
-
+  currentUser: any;
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
@@ -316,7 +298,6 @@ export class ProviderSearchComponent implements OnInit {
   ) {
     this.searchForm = this.createForm();
   }
-
   ngOnInit() {
     this.currentUser = this.authService.getCurrentUser();
     if (!this.currentUser || !this.authService.isCustomer()) {
@@ -324,9 +305,8 @@ export class ProviderSearchComponent implements OnInit {
       return;
     }
     this.loadServiceTypes();
-    this.loadAllProviders(); // Load all providers initially
+    this.loadAllProviders();
   }
-
   createForm(): FormGroup {
     return this.fb.group({
       searchTerm: [''],
@@ -334,7 +314,6 @@ export class ProviderSearchComponent implements OnInit {
       availableToday: [false]
     });
   }
-
   loadServiceTypes() {
     this.searchService.getServiceTypes().subscribe({
       next: (types) => {
@@ -345,7 +324,6 @@ export class ProviderSearchComponent implements OnInit {
       }
     });
   }
-
   loadAllProviders() {
     this.loading = true;
     this.searchService.searchProviders().subscribe({
@@ -361,12 +339,10 @@ export class ProviderSearchComponent implements OnInit {
       }
     });
   }
-
   onSearch() {
     if (this.searchForm.valid) {
       this.loading = true;
       const formValue = this.searchForm.value;
-
       this.searchService.searchProviders(
         formValue.searchTerm,
         formValue.serviceType,
@@ -385,22 +361,18 @@ export class ProviderSearchComponent implements OnInit {
       });
     }
   }
-
   loadRatingsForProviders() {
     this.providers.forEach(provider => {
       this.ratingService.getProviderRatingStats(provider.id).subscribe({
         next: (stats) => {
-          // Use type assertion for now until we update the model
           (provider as any).averageRating = stats.averageRating;
           (provider as any).ratingCount = stats.ratingCount;
         },
         error: (error) => {
-          // Silently fail - ratings are optional
         }
       });
     });
   }
-
   clearFilters() {
     this.searchForm.reset({
       searchTerm: '',
@@ -409,23 +381,20 @@ export class ProviderSearchComponent implements OnInit {
     });
     this.loadAllProviders();
   }
-
   hasActiveFilters(): boolean {
     const formValue = this.searchForm.value;
     return !!formValue.searchTerm || !!formValue.serviceType || formValue.availableToday;
   }
-
   sortBy(criteria: string) {
     this.currentSort = criteria;
-    
     switch (criteria) {
       case 'name':
-        this.providers.sort((a, b) => 
+        this.providers.sort((a, b) =>
           `${a.firstName} ${a.lastName}`.localeCompare(`${b.firstName} ${b.lastName}`)
         );
         break;
       case 'rating':
-        this.providers.sort((a, b) => 
+        this.providers.sort((a, b) =>
           ((b as any).averageRating || 0) - ((a as any).averageRating || 0)
         );
         break;
@@ -433,14 +402,12 @@ export class ProviderSearchComponent implements OnInit {
         this.providers.sort((a, b) => a.hourlyRate - b.hourlyRate);
         break;
       case 'experience':
-        // Simple experience sorting - you might want to parse experience strings
-        this.providers.sort((a, b) => 
+        this.providers.sort((a, b) =>
           (b.experience || '').localeCompare(a.experience || '')
         );
         break;
     }
   }
-
   getSortLabel(): string {
     switch (this.currentSort) {
       case 'name': return 'Name';
@@ -450,15 +417,12 @@ export class ProviderSearchComponent implements OnInit {
       default: return 'Name';
     }
   }
-
   bookAppointment(provider: ServiceProvider) {
     this.router.navigate(['/customer/book-appointment'], {
       queryParams: { providerId: provider.id }
     });
   }
-
   viewProviderDetails(provider: ServiceProvider) {
-    // Navigate to provider details page or show in dialog
     this.snackBar.open(`Viewing details for ${provider.firstName} ${provider.lastName}`, 'Close', {
       duration: 3000
     });

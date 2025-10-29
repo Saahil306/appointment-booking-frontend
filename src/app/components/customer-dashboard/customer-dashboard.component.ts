@@ -15,7 +15,6 @@ import { AppointmentService } from '../../services/appointment.service';
 import { UserService } from '../../services/user.service';
 import { Appointment, AppointmentStatus } from '../../models/appointment.model';
 import { ServiceProvider } from '../../models/user.model';
-
 @Component({
   selector: 'app-customer-dashboard',
   standalone: true,
@@ -42,9 +41,7 @@ import { ServiceProvider } from '../../models/user.model';
           <button mat-button (click)="logout()">Logout</button>
         </div>
       </header>
-
       <div class="dashboard-content">
-        <!-- Quick Actions -->
         <div class="quick-actions">
           <mat-card class="action-card">
             <mat-card-header>
@@ -56,7 +53,6 @@ import { ServiceProvider } from '../../models/user.model';
               </button>
             </mat-card-actions>
           </mat-card>
-
           <mat-card class="action-card">
             <mat-card-header>
               <mat-card-title>Find Providers</mat-card-title>
@@ -67,7 +63,6 @@ import { ServiceProvider } from '../../models/user.model';
               </button>
             </mat-card-actions>
           </mat-card>
-
           <mat-card class="action-card">
             <mat-card-header>
               <mat-card-title>My Appointments</mat-card-title>
@@ -80,8 +75,6 @@ import { ServiceProvider } from '../../models/user.model';
             </mat-card-content>
           </mat-card>
         </div>
-
-        <!-- Appointments Table with Filters -->
         <mat-card class="appointments-card">
           <mat-card-header>
             <mat-card-title>My Appointments</mat-card-title>
@@ -96,44 +89,33 @@ import { ServiceProvider } from '../../models/user.model';
                   <mat-option value="CANCELLED">Cancelled</mat-option>
                 </mat-select>
               </mat-form-field>
-
               <button mat-button (click)="clearFilters()" *ngIf="selectedStatus !== 'ALL'">
                 Clear Filter
               </button>
             </div>
           </mat-card-header>
-          
           <mat-card-content>
             <table mat-table [dataSource]="filteredAppointments" class="mat-elevation-z8">
-              <!-- Service Provider Column -->
               <ng-container matColumnDef="provider">
                 <th mat-header-cell *matHeaderCellDef>Service Provider</th>
                 <td mat-cell *matCellDef="let appointment">
                   {{appointment.providerName}}
                 </td>
               </ng-container>
-
-              <!-- Date Column -->
               <ng-container matColumnDef="date">
                 <th mat-header-cell *matHeaderCellDef>Date & Time</th>
                 <td mat-cell *matCellDef="let appointment">
                   {{formatDateTime(appointment.appointmentDateTime)}}
                 </td>
               </ng-container>
-
-              <!-- Service Type Column -->
               <ng-container matColumnDef="serviceType">
                 <th mat-header-cell *matHeaderCellDef>Service Type</th>
                 <td mat-cell *matCellDef="let appointment">{{appointment.serviceType}}</td>
               </ng-container>
-
-              <!-- Duration Column -->
               <ng-container matColumnDef="duration">
                 <th mat-header-cell *matHeaderCellDef>Duration</th>
                 <td mat-cell *matCellDef="let appointment">{{appointment.duration}} minutes</td>
               </ng-container>
-
-              <!-- Status Column -->
               <ng-container matColumnDef="status">
                 <th mat-header-cell *matHeaderCellDef>Status</th>
                 <td mat-cell *matCellDef="let appointment">
@@ -142,28 +124,26 @@ import { ServiceProvider } from '../../models/user.model';
                   </span>
                 </td>
               </ng-container>
-
-              <!-- Actions Column -->
               <ng-container matColumnDef="actions">
                 <th mat-header-cell *matHeaderCellDef>Actions</th>
                 <td mat-cell *matCellDef="let appointment">
-                  <button mat-icon-button color="primary" (click)="viewAppointment(appointment.id)" 
+                  <button mat-icon-button color="primary" (click)="viewAppointment(appointment.id)"
                           matTooltip="View Details">
                     <mat-icon>visibility</mat-icon>
                   </button>
-                  <button mat-icon-button color="accent" 
+                  <button mat-icon-button color="accent"
                           (click)="rescheduleAppointment(appointment.id)"
                           [disabled]="appointment.status === 'CANCELLED' || appointment.status === 'COMPLETED'"
                           matTooltip="Reschedule">
                     <mat-icon>schedule</mat-icon>
                   </button>
-                  <button mat-icon-button color="primary" 
+                  <button mat-icon-button color="primary"
                           (click)="rateAppointment(appointment.id)"
                           *ngIf="appointment.status === 'COMPLETED'"
                           matTooltip="Rate Service">
                     <mat-icon>star_rate</mat-icon>
                   </button>
-                  <button mat-icon-button color="warn" 
+                  <button mat-icon-button color="warn"
                           (click)="cancelAppointment(appointment.id)"
                           [disabled]="appointment.status === 'CANCELLED' || appointment.status === 'COMPLETED'"
                           matTooltip="Cancel">
@@ -171,11 +151,9 @@ import { ServiceProvider } from '../../models/user.model';
                   </button>
                 </td>
               </ng-container>
-
               <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
               <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
             </table>
-
             <div *ngIf="filteredAppointments.length === 0" class="no-data">
               <mat-icon>event_busy</mat-icon>
               <p *ngIf="selectedStatus === 'ALL'">No appointments found.</p>
@@ -228,29 +206,29 @@ import { ServiceProvider } from '../../models/user.model';
     .filter-field {
       width: 200px;
     }
-    .status-pending { 
-      color: #ff9800; 
+    .status-pending {
+      color: #ff9800;
       font-weight: bold;
       background: #fff3e0;
       padding: 4px 8px;
       border-radius: 4px;
     }
-    .status-confirmed { 
-      color: #4caf50; 
+    .status-confirmed {
+      color: #4caf50;
       font-weight: bold;
       background: #e8f5e8;
       padding: 4px 8px;
       border-radius: 4px;
     }
-    .status-cancelled { 
-      color: #f44336; 
+    .status-cancelled {
+      color: #f44336;
       font-weight: bold;
       background: #ffebee;
       padding: 4px 8px;
       border-radius: 4px;
     }
-    .status-completed { 
-      color: #2196f3; 
+    .status-completed {
+      color: #2196f3;
       font-weight: bold;
       background: #e3f2fd;
       padding: 4px 8px;
@@ -276,15 +254,13 @@ export class CustomerDashboardComponent implements OnInit {
   filteredAppointments: any[] = [];
   selectedStatus: string = 'ALL';
   displayedColumns: string[] = ['provider', 'date', 'serviceType', 'duration', 'status', 'actions'];
-
   constructor(
     private authService: AuthService,
     private appointmentService: AppointmentService,
     private userService: UserService,
     private router: Router,
     private snackBar: MatSnackBar
-  ) {}
-
+  ) { }
   ngOnInit() {
     this.currentUser = this.authService.getCurrentUser();
     if (!this.currentUser) {
@@ -293,25 +269,21 @@ export class CustomerDashboardComponent implements OnInit {
     }
     this.loadAppointments();
   }
-
   get pendingAppointments() {
     return this.appointments.filter(a => a.status === 'PENDING');
   }
-
   get confirmedAppointments() {
     return this.appointments.filter(a => a.status === 'CONFIRMED');
   }
-
   get completedAppointments() {
     return this.appointments.filter(a => a.status === 'COMPLETED');
   }
-
   loadAppointments() {
     this.appointmentService.getCustomerAppointments(this.currentUser.id).subscribe({
       next: (appointments) => {
         console.log('Appointments loaded:', appointments);
         this.appointments = appointments;
-        this.applyFilter(); // Apply initial filter
+        this.applyFilter();
       },
       error: (error) => {
         console.error('Error loading appointments:', error);
@@ -319,7 +291,6 @@ export class CustomerDashboardComponent implements OnInit {
       }
     });
   }
-
   applyFilter() {
     if (this.selectedStatus === 'ALL') {
       this.filteredAppointments = this.appointments;
@@ -329,12 +300,10 @@ export class CustomerDashboardComponent implements OnInit {
       );
     }
   }
-
   clearFilters() {
     this.selectedStatus = 'ALL';
     this.applyFilter();
   }
-
   formatDateTime(dateTime: string): string {
     return new Date(dateTime).toLocaleString('en-IN', {
       year: 'numeric',
@@ -344,23 +313,18 @@ export class CustomerDashboardComponent implements OnInit {
       minute: '2-digit'
     });
   }
-
   navigateToBookAppointment() {
     this.router.navigate(['/customer/book-appointment']);
   }
-
   viewAppointment(appointmentId: number) {
     this.router.navigate(['/customer/appointment', appointmentId]);
   }
-
   rescheduleAppointment(appointmentId: number) {
     this.router.navigate(['/customer/reschedule', appointmentId]);
   }
-
   rateAppointment(appointmentId: number) {
     this.router.navigate(['/customer/rate', appointmentId]);
   }
-
   cancelAppointment(appointmentId: number) {
     if (confirm('Are you sure you want to cancel this appointment?')) {
       this.appointmentService.cancelAppointment(appointmentId).subscribe({
@@ -374,7 +338,6 @@ export class CustomerDashboardComponent implements OnInit {
       });
     }
   }
-
   logout() {
     this.authService.logout();
     this.router.navigate(['/login']);

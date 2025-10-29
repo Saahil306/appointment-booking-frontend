@@ -11,7 +11,6 @@ import { MatMenuModule } from '@angular/material/menu';
 import { AuthService } from '../../services/auth.service';
 import { AdminService } from '../../services/admin.service';
 import { User, ServiceProvider } from '../../models/user.model';
-
 @Component({
   selector: 'app-admin-dashboard',
   standalone: true,
@@ -36,9 +35,7 @@ import { User, ServiceProvider } from '../../models/user.model';
           <button mat-button (click)="logout()">Logout</button>
         </div>
       </header>
-
       <div class="dashboard-content">
-        <!-- Statistics Cards -->
         <div class="stats-cards" *ngIf="stats">
           <mat-card class="stat-card">
             <mat-card-content>
@@ -46,36 +43,30 @@ import { User, ServiceProvider } from '../../models/user.model';
               <div class="stat-label">Total Users</div>
             </mat-card-content>
           </mat-card>
-
           <mat-card class="stat-card">
             <mat-card-content>
               <div class="stat-number">{{stats.totalAppointments}}</div>
               <div class="stat-label">Total Appointments</div>
             </mat-card-content>
           </mat-card>
-
           <mat-card class="stat-card">
             <mat-card-content>
               <div class="stat-number">{{stats.totalProviders}}</div>
               <div class="stat-label">Service Providers</div>
             </mat-card-content>
           </mat-card>
-
           <mat-card class="stat-card">
             <mat-card-content>
               <div class="stat-number">{{stats.pendingProviders}}</div>
               <div class="stat-label">Pending Approvals</div>
             </mat-card-content>
           </mat-card>
-
-          <!-- NEW RATING STATS CARDS ✅ -->
           <mat-card class="stat-card" *ngIf="stats.totalRatings">
             <mat-card-content>
               <div class="stat-number">{{stats.totalRatings}}</div>
               <div class="stat-label">Total Ratings</div>
             </mat-card-content>
           </mat-card>
-
           <mat-card class="stat-card" *ngIf="stats.averageRating">
             <mat-card-content>
               <div class="stat-number">{{stats.averageRating | number:'1.1-1'}}</div>
@@ -83,8 +74,6 @@ import { User, ServiceProvider } from '../../models/user.model';
             </mat-card-content>
           </mat-card>
         </div>
-
-        <!-- Quick Actions Section ✅ -->
         <div class="quick-actions">
           <mat-card class="action-card">
             <mat-card-header>
@@ -100,7 +89,6 @@ import { User, ServiceProvider } from '../../models/user.model';
               </button>
             </mat-card-actions>
           </mat-card>
-
           <mat-card class="action-card">
             <mat-card-header>
               <mat-card-title>User Management</mat-card-title>
@@ -115,7 +103,6 @@ import { User, ServiceProvider } from '../../models/user.model';
               </button>
             </mat-card-actions>
           </mat-card>
-
           <mat-card class="action-card">
             <mat-card-header>
               <mat-card-title>Provider Approvals</mat-card-title>
@@ -131,8 +118,6 @@ import { User, ServiceProvider } from '../../models/user.model';
             </mat-card-actions>
           </mat-card>
         </div>
-
-        <!-- Pending Providers Section -->
         <mat-card class="section-card" id="pending-providers">
           <mat-card-header>
             <mat-card-title>Pending Provider Approvals</mat-card-title>
@@ -140,33 +125,24 @@ import { User, ServiceProvider } from '../../models/user.model';
           </mat-card-header>
           <mat-card-content>
             <table mat-table [dataSource]="pendingProviders" class="mat-elevation-z8" *ngIf="pendingProviders.length > 0">
-              <!-- Name Column -->
               <ng-container matColumnDef="name">
                 <th mat-header-cell *matHeaderCellDef>Name</th>
                 <td mat-cell *matCellDef="let provider">
                   {{provider.firstName}} {{provider.lastName}}
                 </td>
               </ng-container>
-
-              <!-- Email Column -->
               <ng-container matColumnDef="email">
                 <th mat-header-cell *matHeaderCellDef>Email</th>
                 <td mat-cell *matCellDef="let provider">{{provider.email}}</td>
               </ng-container>
-
-              <!-- Service Type Column -->
               <ng-container matColumnDef="serviceType">
                 <th mat-header-cell *matHeaderCellDef>Service Type</th>
                 <td mat-cell *matCellDef="let provider">{{provider.serviceType}}</td>
               </ng-container>
-
-              <!-- Experience Column -->
               <ng-container matColumnDef="experience">
                 <th mat-header-cell *matHeaderCellDef>Experience</th>
                 <td mat-cell *matCellDef="let provider">{{provider.experience || 'Not specified'}}</td>
               </ng-container>
-
-              <!-- Actions Column -->
               <ng-container matColumnDef="actions">
                 <th mat-header-cell *matHeaderCellDef>Actions</th>
                 <td mat-cell *matCellDef="let provider">
@@ -184,19 +160,15 @@ import { User, ServiceProvider } from '../../models/user.model';
                   </button>
                 </td>
               </ng-container>
-
               <tr mat-header-row *matHeaderRowDef="['name', 'email', 'serviceType', 'experience', 'actions']"></tr>
               <tr mat-row *matRowDef="let row; columns: ['name', 'email', 'serviceType', 'experience', 'actions'];"></tr>
             </table>
-
             <div *ngIf="pendingProviders.length === 0" class="no-data">
               <mat-icon>verified_user</mat-icon>
               <p>No pending provider approvals. All providers are approved.</p>
             </div>
           </mat-card-content>
         </mat-card>
-
-        <!-- All Users Section with Management -->
         <mat-card class="section-card" id="all-users">
           <mat-card-header>
             <mat-card-title>All Users Management</mat-card-title>
@@ -204,21 +176,16 @@ import { User, ServiceProvider } from '../../models/user.model';
           </mat-card-header>
           <mat-card-content>
             <table mat-table [dataSource]="allUsers" class="mat-elevation-z8">
-              <!-- Name Column -->
               <ng-container matColumnDef="name">
                 <th mat-header-cell *matHeaderCellDef>Name</th>
                 <td mat-cell *matCellDef="let user">
                   {{user.firstName}} {{user.lastName}}
                 </td>
               </ng-container>
-
-              <!-- Email Column -->
               <ng-container matColumnDef="email">
                 <th mat-header-cell *matHeaderCellDef>Email</th>
                 <td mat-cell *matCellDef="let user">{{user.email}}</td>
               </ng-container>
-
-              <!-- Role Column -->
               <ng-container matColumnDef="role">
                 <th mat-header-cell *matHeaderCellDef>Role</th>
                 <td mat-cell *matCellDef="let user">
@@ -227,8 +194,6 @@ import { User, ServiceProvider } from '../../models/user.model';
                   </mat-chip>
                 </td>
               </ng-container>
-
-              <!-- Status Column -->
               <ng-container matColumnDef="status">
                 <th mat-header-cell *matHeaderCellDef>Status</th>
                 <td mat-cell *matCellDef="let user">
@@ -243,8 +208,6 @@ import { User, ServiceProvider } from '../../models/user.model';
                   </mat-chip>
                 </td>
               </ng-container>
-
-              <!-- Actions Column -->
               <ng-container matColumnDef="actions">
                 <th mat-header-cell *matHeaderCellDef>Actions</th>
                 <td mat-cell *matCellDef="let user">
@@ -256,25 +219,25 @@ import { User, ServiceProvider } from '../../models/user.model';
                       <mat-icon>visibility</mat-icon>
                       View Details
                     </button>
-                    <button mat-menu-item 
+                    <button mat-menu-item
                             *ngIf="user.active"
                             (click)="deactivateUser(user.id)">
                       <mat-icon>block</mat-icon>
                       Deactivate
                     </button>
-                    <button mat-menu-item 
+                    <button mat-menu-item
                             *ngIf="!user.active"
                             (click)="activateUser(user.id)">
                       <mat-icon>check_circle</mat-icon>
                       Activate
                     </button>
-                    <button mat-menu-item 
+                    <button mat-menu-item
                             *ngIf="user.role === 'SERVICE_PROVIDER' && !user.approved"
                             (click)="approveProvider(user.id)">
                       <mat-icon>verified</mat-icon>
                       Approve Provider
                     </button>
-                    <button mat-menu-item 
+                    <button mat-menu-item
                             *ngIf="user.role === 'CUSTOMER' || user.role === 'SERVICE_PROVIDER'"
                             (click)="viewUserAppointments(user)">
                       <mat-icon>event</mat-icon>
@@ -283,7 +246,6 @@ import { User, ServiceProvider } from '../../models/user.model';
                   </mat-menu>
                 </td>
               </ng-container>
-
               <tr mat-header-row *matHeaderRowDef="['name', 'email', 'role', 'status', 'actions']"></tr>
               <tr mat-row *matRowDef="let row; columns: ['name', 'email', 'role', 'status', 'actions'];"></tr>
             </table>
@@ -371,14 +333,12 @@ export class AdminDashboardComponent implements OnInit {
   stats: any;
   pendingProviders: ServiceProvider[] = [];
   allUsers: User[] = [];
-
   constructor(
     private authService: AuthService,
     private adminService: AdminService,
     private router: Router,
     private snackBar: MatSnackBar
-  ) {}
-
+  ) { }
   ngOnInit() {
     this.currentUser = this.authService.getCurrentUser();
     if (!this.currentUser || !this.authService.isAdmin()) {
@@ -389,7 +349,6 @@ export class AdminDashboardComponent implements OnInit {
     this.loadPendingProviders();
     this.loadAllUsers();
   }
-
   loadStats() {
     this.adminService.getSystemStats().subscribe({
       next: (stats) => {
@@ -400,7 +359,6 @@ export class AdminDashboardComponent implements OnInit {
       }
     });
   }
-
   loadPendingProviders() {
     this.adminService.getPendingProviders().subscribe({
       next: (providers) => {
@@ -411,7 +369,6 @@ export class AdminDashboardComponent implements OnInit {
       }
     });
   }
-
   loadAllUsers() {
     this.adminService.getAllUsers().subscribe({
       next: (users) => {
@@ -422,7 +379,6 @@ export class AdminDashboardComponent implements OnInit {
       }
     });
   }
-
   getRoleColor(role: string): string {
     switch (role) {
       case 'ADMIN': return 'primary';
@@ -431,7 +387,6 @@ export class AdminDashboardComponent implements OnInit {
       default: return '';
     }
   }
-
   approveProvider(providerId: number) {
     this.adminService.approveServiceProvider(providerId).subscribe({
       next: () => {
@@ -445,7 +400,6 @@ export class AdminDashboardComponent implements OnInit {
       }
     });
   }
-
   rejectProvider(providerId: number) {
     if (confirm('Are you sure you want to reject this provider?')) {
       this.adminService.rejectServiceProvider(providerId).subscribe({
@@ -461,15 +415,12 @@ export class AdminDashboardComponent implements OnInit {
       });
     }
   }
-
   viewUserDetails(user: User) {
     this.router.navigate(['/admin/user', user.id]);
   }
-
   viewUserAppointments(user: User) {
     this.router.navigate(['/admin/user', user.id, 'appointments']);
   }
-
   deactivateUser(userId: number) {
     if (confirm('Are you sure you want to deactivate this user?')) {
       this.adminService.deactivateUser(userId).subscribe({
@@ -484,7 +435,6 @@ export class AdminDashboardComponent implements OnInit {
       });
     }
   }
-
   activateUser(userId: number) {
     this.adminService.activateUser(userId).subscribe({
       next: () => {
@@ -497,16 +447,12 @@ export class AdminDashboardComponent implements OnInit {
       }
     });
   }
-
-  // NEW METHODS FOR SCROLLING ✅
   scrollToPending() {
     document.getElementById('pending-providers')?.scrollIntoView({ behavior: 'smooth' });
   }
-
   scrollToUsers() {
     document.getElementById('all-users')?.scrollIntoView({ behavior: 'smooth' });
   }
-
   logout() {
     this.authService.logout();
     this.router.navigate(['/login']);
